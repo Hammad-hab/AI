@@ -18,6 +18,15 @@ const winCombos =[
   [0, 3, 6]
 ];
 
+function generateSensibleResponse () {
+    const response = [
+      "After speculating the opponents move I would suggest crossing ",
+      "The move that I would suggest is crossing ", 
+      "There is a " + Math.floor(Math.random() * 99) + " percent chance that you can win by crossing "
+    ]
+    return response[Math.floor(Math.random() * response.length)]
+}
+
 const cells = document.querySelectorAll('.cell');
 startGame();
 selectSym("O")
@@ -76,7 +85,7 @@ function checkWin(board, player) {
 function gameOver(gameWon){
   for (let index of winCombos[gameWon.index]) {
     document.getElementById(index).style.backgroundColor = 
-      gameWon.player === huPlayer ? "blue" : "red";
+      gameWon.player === huPlayer ? "red" : "green";
   }
   for (let i=0; i < cells.length; i++) {
     cells[i].removeEventListener('click', turnClick, false);
@@ -98,17 +107,20 @@ function emptySquares() {
   
 function bestSpot(){
   const ix =  minimax(origBoard, aiPlayer).index;
-  utterance.text = "I would suggest crossing " + ix
+  utterance.text = generateSensibleResponse() + ix
   speechSynthesis.speak(utterance)
   return ix
 }
   
 function checkTie() {
+  speechSynthesis.speak(utterance)
   if (emptySquares().length === 0){
     for (cell of cells) {
       cell.style.backgroundColor = "green";
       cell.removeEventListener('click',turnClick, false);
     }
+  utterance.text = "There is no solution to this game"
+
     declareWinner("Tie game");
     return true;
   } 
