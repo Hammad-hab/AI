@@ -1,0 +1,101 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js"></script>
+    <script>
+      let Player1Score = 0;
+      let Player2Score = 0;
+      const aiPlayer = "X";
+      const huPlayer = "O";
+
+      const winCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [6, 4, 2],
+      ];
+
+      const board = Array.from(Array(9).keys());
+      // board[4] = huPlayer
+      function checkWin(board, player) {
+        let plays = board.reduce(
+          (a, e, i) => (e === player ? a.concat(i) : a),
+          []
+        );
+        let gameWon = null;
+        for (let [index, win] of winCombos.entries()) {
+          if (win.every((elem) => plays.indexOf(elem) > -1)) {
+            gameWon = { index: index, player: player };
+            break;
+          }
+        }
+        return gameWon;
+      }
+
+      function isVacant(value) {
+        return !(value === -1 || value === 1);
+      }
+
+      function MINIMAX(board = [], player) {
+        const availableSpots = board.filter((e) => typeof e === "number");
+
+        if (checkWin(board, huPlayer)) {
+          return { score: -10 };
+        } else if (checkWin(board, aiPlayer)) {
+          return { score: 10 };
+        } else if (availableSpots.length === 0) {
+          return { score: 0 };
+        }
+
+        var moves = [];
+        for (let i = 0; i < availableSpots.length; i += 1) {
+          var mv = {};
+          mv.index = board[availableSpots[i]];
+          board[availableSpots[i]] = player;
+          if (player === aiPlayer) {
+            var result = MINIMAX(board, aiPlayer);
+            mv.score = result.score;
+          } else {
+            var result = MINIMAX(board, huPlayer);
+            mv.score = result.score;
+          }
+          board[availableSpots[i]] = mv.index;
+          moves.push(mv);
+        }
+        var bestMove;
+        if (player === aiPlayer) {
+          var bestScore = -10000;
+          for (var i = 0; i < moves.length; i++) {
+            if (moves[i].score > bestScore) {
+              bestScore = moves[i].score;
+              bestMove = i;
+            }
+          }
+        } else {
+          var bestScore = 10000;
+          for (var i = 0; i < moves.length; i++) {
+            if (moves[i].score < bestScore) {
+              bestScore = moves[i].score;
+              bestMove = i;
+            }
+          }
+        }
+        return moves[bestMove];
+      }
+
+      console.log(MINIMAX([
+      "X", "X", "",
+       3, 4, "O",
+      "O", "O", "X"
+      ], "X"));
+    </script>
+  </body>
+</html>
