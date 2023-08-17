@@ -29,7 +29,7 @@ function generateSensibleResponse () {
 
 const cells = document.querySelectorAll('.cell');
 startGame();
-selectSym("O")
+selectSym("X")
 
 function selectSym(sym){
   huPlayer = sym;
